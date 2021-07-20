@@ -1,0 +1,193 @@
+In project folder
+
+mvn clean install
+mvn spring-boot:run
+java -jar target/accounts-0.0.1-SNAPSHOT.jar
+
+======================================================================
+======================================================================
+
+DO NOT USE THIS go to line 83
+
+Docker Image creating process
+
+create Dockerfile without any extension in project folder
+Add content like below : 
+
+----------------------------------------------------------------------
+#Start with a base image containing Java runtime
+FROM openjdk:8-jdk-alpine as build
+
+#Information around who maintains the image
+LABEL org.opencontainers.image.authors="sanjay.invents@gmail.com"
+
+#Add the application's jar to the container
+COPY target/accounts-0.0.1-SNAPSHOT.jar accounts-0.0.1-SNAPSHOT.jar
+
+#Execute the application
+ENTRYPOINT ["java","-jar","/accounts-0.0.1-SNAPSHOT.jar"]
+----------------------------------------------------------------------
+
+======================================================================
+======================================================================
+
+docker images -> for finding what images are there
+
+docker build . -t shoryukane/accounts
+
+======================================================================
+
+Creating container using docker image
+
+In project folder :
+docker run -p 8080:8080 shoryukane/accounts
+
+======================================================================
+
+docker run -p <systemPort>:<dockerPort> <image name>
+
+docker run -d -p <systemPort>:<dockerPort> <image name> -> for not showing logs
+
+docker logs <container id>
+
+docker logs -f <container id>
+
+docker stop <container id> -> stops gracefully
+
+docker ps -a
+
+docker start <container id> <container id> ...
+
+docker container pause <container id>
+
+docker container unpause <container id>
+
+docker container inspect <container id>
+
+docker image inspect <image name>
+
+docker kill <container id> -> stops not gracefully
+
+docker stats
+
+docker rm <container id>
+
+======================================================================
+
+buildpacks.io
+
+paketo.io
+
+======================================================================
+
+Creating docker image using build in spring boot
+
+go to project folder (example loans)
+
+in pom.xml add
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+                <image>
+                    <name>shoryukane/${project.artifactId}</name>
+                </image>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
+
+mvn spring-boot:build-image
+
+mvn spring-boot:build-image -Dmaven.test.skip=true
+
+======================================================================
+
+Push docker images into docker hub repository
+
+docker images
+
+docker push docker.io/<image name>:latest
+
+docker push docker.io/shoryukane/configserver:latest
+
+docker pull shoryukane/cards:latest
+
+docker push docker.io/bloodseeker/accounts
+
+======================================================================
+
+Docker compose
+
+create docker-compose.yml/docker-compose.yaml/compose.yml/compose.yaml file 
+
+docker-compose up
+
+docker-compose stop
+
+======================================================================
+
+Create latest docker image
+
+go to project folder
+
+mvn spring-boot:build-image
+
+remove docker image with tag <none>
+
+docker image rm <image id>
+
+======================================================================
+
+docker run -d -p 9411:9411 openzipkin/zipkin
+
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15762 rabbitmq:3-management
+
+======================================================================
+
+gcloud container clusters get-credentials cluster-1 --zone us-central1-c --project microservices-319914
+
+kubectl get nodes
+
+kubectl get pods
+
+kubectl get deployment
+
+kubectl get services
+
+kubectl get replicaset
+
+kubectl get all
+
+kubectl get configmap
+
+kubectl apply -f 1_configmaps.yml
+
+kubectl apply -f <file name>
+
+kubectl delete configmap <configmap name>
+
+kubectl delete pod accounts-deployment-77765c758c-f5z4x
+
+kubectl delete pod <pod name>
+
+kubectl scale deployment accounts-deployment --replicas=3
+
+kubectl describe pod accounts-deployment-77765c758c-b2lvs
+
+kubectl set image deployment accounts-deployment accounts=bloodseeker/accounts:k8s
+
+kubectl rollout history deployment accounts-deployment
+
+kubectl rollout undo deployment accounts-deployment --to-revision=1
+
+kubectl logs accounts-deployment-77765c758c-mbdzn
+
+kubectl logs <pod name>
+
+kubectl get hpa
+
+kubectl autoscale deployment accounts-deployment --min=3 --max=10 --cpu-percent=70
